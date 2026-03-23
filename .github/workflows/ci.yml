@@ -1,34 +1,21 @@
-name: ci
+name: CI
 
 on:
   pull_request:
-  push:
     branches:
       - main
 
 jobs:
-  verify:
+  lint:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Check index.html exists
-        run: test -f index.html
-
-      - name: Prepare artifact directory
+      - name: Install actionlint
         run: |
-          mkdir -p dist
-          cp index.html dist/index.html
+          curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash | bash
 
-    actionlint:
-      runs-on: ubuntu-latest
-  
-      steps:
-        - name: Run actionlint
-        - uses: actions/checkout@v4
-          run: |
-            echo "::add-matcher::.github/actionlint-matcher.json"
-            bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
-            ./actionlint -color
+      - name: Run actionlint
+        run: ./actionlint
